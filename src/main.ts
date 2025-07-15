@@ -8,10 +8,14 @@ import PSlotsGameLevel from './components/PSlotsGameLevel.ts';
 import CMainUI from './components/CMainUI.ts';
 import CLoadingScreen from './components/CLoadingScreen.ts';
 
+import { gsap } from 'gsap';
+
 
 // ---config
 const RENDER_TARGET_ID = 'pixi-render-target';
-const APP_BG_COLOR = '#e57373';
+const LOADING_SCREEN_BG = '#313638';
+const MAIN_SCREEN_BG = '#E0DFD5';
+const MAIN_SCREEN_BG_RGB = [49, 54, 56, 1.0];
 const SYMBOL_MAX_SIZE = 150;
 
 // ---assets
@@ -51,9 +55,18 @@ async function OnInitComplete(GameApp: PApp) {
   let loadingScreen = new CLoadingScreen();
   LoadingLevel.Container.addChild(loadingScreen);
   loadingScreen.addEventListener(CLoadingScreen.EVENT_START_CLICKED, () => {
+    
     // switch to main level on clicking start
-    if (bIsMainGameReady)
+    if (bIsMainGameReady) {
       GameApp.CurrentLevel = SlotsLevel;
+      // simple change changing effect
+      // this sets semi-transparent color midway, so it will trigger a warning in color
+      gsap.to(GameApp.Instance.renderer.background, {
+        'color': MAIN_SCREEN_BG,
+        duration: 1,
+        ease: 'sine'
+      });
+    }
   });
   
   // priority load Loading Level
@@ -174,7 +187,7 @@ function initializeSlotReels(assetsDictionary: {}) {
     GameApp.addListener(PApp.EVENT_INITIALIZE_FAILED, OnInitFailed);
     
     await GameApp.Init({
-      bgColor: APP_BG_COLOR
+      bgColor: LOADING_SCREEN_BG
     });
     
   } catch (e) {

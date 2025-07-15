@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import CContainer from '../core/CContainer.ts';
 import PSlotsGameMode from './PSlotsGameMode.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
+import { gsap } from 'gsap';
 
 // the UI class is not using layout to achieve a "positioning:absolute" type of effect.
 export default class CMainUI extends CContainer {
@@ -14,6 +15,8 @@ export default class CMainUI extends CContainer {
   private _GameMode: PSlotsGameMode | undefined;
   
   private _ResultText: string | undefined;
+  
+  private _btnSpin: SSymbolSprite | undefined;
   
   
   constructor(options?: PIXI.ContainerOptions<PIXI.ContainerChild>) {
@@ -58,7 +61,7 @@ export default class CMainUI extends CContainer {
     this.addChild(this._UIHeader, this._UIFooter);
     
     this.addHeroText();
-    this.addActionArea();
+    this.setUpSpinButtonAndResult();
     
     this.reScaleWithBaseRes();
     
@@ -70,8 +73,26 @@ export default class CMainUI extends CContainer {
   
   set GameMode(value: PSlotsGameMode) {
     this._GameMode = value;
+    
+    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_STARTED, this.onStartSpinning.bind(this));
+    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_FINISHED, this.onFinishSpin.bind(this));
   }
   
+  private onStartSpinning() {
+    if (!this._btnSpin) return;
+    gsap.to(this._btnSpin, {
+      'alpha': 0.3,
+      duration: .5
+    });
+  }
+  
+  private onFinishSpin() {
+    if (!this._btnSpin) return;
+    gsap.to(this._btnSpin, {
+      'alpha': 1,
+      duration: .25
+    });
+  }
   
   private addHeroText() {
     
@@ -91,23 +112,24 @@ export default class CMainUI extends CContainer {
   }
   
   
-  private addActionArea() {
+  private setUpSpinButtonAndResult() {
     
     // this should finish immediately
     PIXI.Assets.loadBundle('SlotsGameAssets').then((assets) => {
       
-      const btnSpin = new SSymbolSprite({
+      this._btnSpin = new SSymbolSprite({
         symbolName: 'btnSpin',
         maxSize: CMainUI.BTN_SPIN_SIZE,
         texture: assets['spinBtn']
       });
       
-      btnSpin.layout = true;
+      this._btnSpin.layout = true;
       
       // clicking
-      btnSpin.cursor = 'pointer';
-      btnSpin.eventMode = 'static';
-      btnSpin.on('pointerdown', () => this.onSpinBtnClick());
+      this._btnSpin.cursor = 'pointer';
+      this._btnSpin.eventMode = 'static';
+      this._btnSpin.on('pointerdown', () => this.onSpinBtnClick());
+      
       
       const ResultText = new PIXI.Text({
         text: this._ResultText || '',
@@ -119,7 +141,7 @@ export default class CMainUI extends CContainer {
       });
       ResultText.layout = true;
       
-      this._UIFooter?.addChild(btnSpin, ResultText);
+      this._UIFooter?.addChild(this._btnSpin, ResultText);
     });
     
   }
