@@ -17,7 +17,7 @@ const LOADING_SCREEN_BG = '#313638';
 const MAIN_SCREEN_BG = '#E0DFD5';
 const SYMBOL_MAX_SIZE = 150;
 
-const bSKIP_LOADING_SCREEN = true; //debugging
+const bSKIP_LOADING_SCREEN = false; //debugging
 
 // ---assets
 const BundleManifest = {
