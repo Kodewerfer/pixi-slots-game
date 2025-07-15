@@ -62,7 +62,13 @@ export default class PSlotsGameMode extends PGameMode {
     }
   }
   
-  public FinishedSpinning() {
+  // check a given win line, and return connected 3 symbols
+  public calculateWinLines(winLineNumber: number) {
+    // mockup
+    return winLineNumber;
+  }
+  
+  protected FinishedSpinning() {
     
     this.GameRunning = false;
     

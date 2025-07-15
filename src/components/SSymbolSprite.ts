@@ -20,9 +20,6 @@ export default class SSymbolSprite extends SSprite {
     return this._CurrentSymbolName;
   }
   
-  set CurrentSymbolName(value: string) {
-    this._CurrentSymbolName = value;
-  }
   
   public swapTexture({ newTexture, newName }: { newTexture: PIXI.Texture, newName: string }) {
     this._CurrentSymbolName = newName;

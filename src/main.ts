@@ -5,8 +5,8 @@ import CReel from './components/CReel.ts';
 import CReelsWrapper from './components/CReelsWrapper.ts';
 import PSlotsGameMode from './components/PSlotsGameMode.ts';
 import PSlotsGameLevel from './components/PSlotsGameLevel.ts';
-import CMainUI from './components/CMainUI.ts';
-import CLoadingScreen from './components/CLoadingScreen.ts';
+import CSlotsGameUI from './components/CSlotsGameUI.ts';
+import CLoadingScreenUI from './components/CLoadingScreenUI.ts';
 
 import { gsap } from 'gsap';
 
@@ -46,22 +46,22 @@ async function OnInitComplete(GameApp: PApp) {
   await PIXI.Assets.init({ manifest: BundleManifest });
   
   // prep main game
-  const SlotsGameMode = new PSlotsGameMode();
-  const SlotsLevel = new PSlotsGameLevel({ levelID: 'SlotGame' });
-  const SlotsUI = new CMainUI({ isRenderGroup: true });
+  const SlotsGameMode = new PSlotsGameMode(); //the core logic within a "level"
+  const SlotsLevel = new PSlotsGameLevel({ levelID: 'SlotGame' });//only handles styling/positioning with pixi/layout
+  const SlotsUI = new CSlotsGameUI({ isRenderGroup: true });
   SlotsUI.GameMode = SlotsGameMode;// spin function is a method of PSlotGameLevel
   
   // the loading screen
-  const LoadingLevel = new PSlotsGameLevel({ levelID: 'Loading Level' });
-  let loadingScreen = new CLoadingScreen();
+  const LoadingLevel = new PSlotsGameLevel({ levelID: 'Loading Level' }); //in a more complex case where the PSlotsGameLevel has its own logic, the loading level should have its own class.
+  let loadingScreen = new CLoadingScreenUI();
   LoadingLevel.Container.addChild(loadingScreen);
-  loadingScreen.addEventListener(CLoadingScreen.EVENT_START_CLICKED, () => {
+  loadingScreen.addEventListener(CLoadingScreenUI.EVENT_START_CLICKED, () => {
     
     // switch to main level on clicking start
     if (bIsMainGameReady && !bSKIP_LOADING_SCREEN) {
       GameApp.CurrentLevel = SlotsLevel;
       // simple change changing effect
-      // this sets semi-transparent color midway, so it will trigger a warning in color
+      // this sets semi-transparent color midway, so it will trigger a warning in console
       gsap.to(GameApp.Instance.renderer.background, {
         'color': MAIN_SCREEN_BG,
         duration: 1,
@@ -76,7 +76,7 @@ async function OnInitComplete(GameApp: PApp) {
   
   let bIsMainGameReady = false;// flag
   const lastProgress: number[] = [];
-  let progressTimeOut: NodeJS.Timeout | null;
+  let progressTimeOut: any;
   PIXI.Assets.loadBundle('SlotsGameAssets', (progress) => {
     
     // a bit of a cheap trick to make sure the loading process is visible
@@ -95,7 +95,8 @@ async function OnInitComplete(GameApp: PApp) {
     
   })
     .then((loadedResources) => {
-      // Initialize main game while loading screen shown
+      
+      // Initialize main game while loading screen shows
       const assetsDictionary = {
         hv1: loadedResources.hv1,
         hv2: loadedResources.hv2,
@@ -132,9 +133,12 @@ function OnInitFailed() {
   console.error('App Failed to initialize.');
 }
 
+// -- build each reel following its reel strip set.
 function initializeSlotReels(assetsDictionary: {}) {
+  // the "wrapper", that holds all 5 reels
   const reelsWrapper = new CReelsWrapper();
   
+  // could use a loop here but this looks less confusing
   const ReelOne = new CReel();
   ReelOne.buildReel({
     bandIndex: 1,
@@ -180,6 +184,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   return reelsWrapper;
 }
 
+// -- main entrance
 (async () => {
   
   try {

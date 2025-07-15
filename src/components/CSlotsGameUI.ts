@@ -4,8 +4,7 @@ import PSlotsGameMode from './PSlotsGameMode.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import { gsap } from 'gsap';
 
-// the UI class is not using layout to achieve a "positioning:absolute" type of effect.
-export default class CMainUI extends CContainer {
+export default class CSlotsGameUI extends CContainer {
   
   public static readonly BTN_SPIN_SIZE = 180;
   
@@ -92,6 +91,7 @@ export default class CMainUI extends CContainer {
     this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_FINISHED, this.onFinishSpin.bind(this));
   }
   
+  // fade and unfade the spin button(s)
   private onStartSpinning() {
     if (!this._UIActionButtons) return;
     gsap.to(this._UIActionButtons, {
@@ -152,7 +152,7 @@ export default class CMainUI extends CContainer {
       
       this._btnSpin = new SSymbolSprite({
         symbolName: 'btnSpin',
-        maxSize: CMainUI.BTN_SPIN_SIZE,
+        maxSize: CSlotsGameUI.BTN_SPIN_SIZE,
         texture: assets['spinBtn']
       });
       

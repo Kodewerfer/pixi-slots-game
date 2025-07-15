@@ -2,7 +2,7 @@ import CContainer from '../core/CContainer.ts';
 import * as PIXI from 'pixi.js';
 import { Ticker } from 'pixi.js';
 
-export default class CLoadingScreen extends CContainer {
+export default class CLoadingScreenUI extends CContainer {
   
   public static readonly EVENT_START_CLICKED: string = 'START_CLICKED';
   
@@ -12,6 +12,12 @@ export default class CLoadingScreen extends CContainer {
   private _LoadingTextContainer = new CContainer({ scaleWithBaseRes: true });
   private _ProgressText: PIXI.Text | undefined;
   private _BtnStart: PIXI.Text | undefined;
+  
+  // composite property, setting number and text
+  set CurrentProgress(progress: number) {
+    this._ProgressNumber = progress;
+    this._ProgressText!.text = this._ProgressNumber + '%';
+  }
   
   constructor(options?: PIXI.ContainerOptions<PIXI.ContainerChild>) {
     super(options);
@@ -48,10 +54,6 @@ export default class CLoadingScreen extends CContainer {
     
   }
   
-  set CurrentProgress(progress: number) {
-    this._ProgressNumber = progress;
-    this._ProgressText!.text = this._ProgressNumber + '%';
-  }
   
   private addLoadingTexts() {
     
@@ -112,8 +114,8 @@ export default class CLoadingScreen extends CContainer {
     this._BtnStart!.on('pointerdown', () => this.onStartBtnClick());
   }
   
-  private onStartBtnClick() {
-    this.emit(CLoadingScreen.EVENT_START_CLICKED, this);
+  public onStartBtnClick() {
+    this.emit(CLoadingScreenUI.EVENT_START_CLICKED, this);
   }
   
   protected onTick(ticker: Ticker) {
