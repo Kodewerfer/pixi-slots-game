@@ -11,6 +11,7 @@ export default class CMainUI extends CContainer {
   
   private readonly _UIHeader: CContainer | undefined;
   private readonly _UIFooter: CContainer | undefined;
+  private readonly _UIActionButtons: CContainer | undefined;
   
   private _GameMode: PSlotsGameMode | undefined;
   
@@ -58,6 +59,19 @@ export default class CMainUI extends CContainer {
       justifyContent: 'space-around'
     };
     
+    this._UIActionButtons = new CContainer();
+    this._UIActionButtons.label = 'Action Buttons';
+    this._UIActionButtons.layout = {
+      width: '100%',
+      height: 'auto',
+      // marginBottom: '15%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 20,
+      justifyContent: 'center'
+    };
+    this._UIFooter.addChild(this._UIActionButtons);
+    
     this.addChild(this._UIHeader, this._UIFooter);
     
     this.addHeroText();
@@ -79,16 +93,16 @@ export default class CMainUI extends CContainer {
   }
   
   private onStartSpinning() {
-    if (!this._btnSpin) return;
-    gsap.to(this._btnSpin, {
+    if (!this._UIActionButtons) return;
+    gsap.to(this._UIActionButtons, {
       'alpha': 0.3,
       duration: .5
     });
   }
   
   private onFinishSpin() {
-    if (!this._btnSpin) return;
-    gsap.to(this._btnSpin, {
+    if (!this._UIActionButtons) return;
+    gsap.to(this._UIActionButtons, {
       'alpha': 1,
       duration: .25
     });
@@ -99,12 +113,31 @@ export default class CMainUI extends CContainer {
     const heroText = new PIXI.Text({
       text: 'Pixi Slots Game Demo',
       style: {
-        stroke: { color: '#000', width: 4, join: 'round' },
-        fill: '#ffffff',
+        fontFamily: 'Arial Black, Impact, sans-serif',
+        fontWeight: 'bold',
+        stroke: {
+          color: '#8B4513', // Dark brown border
+          width: 5,
+          join: 'round'
+        },
+        dropShadow: {
+          color: '#000000',
+          alpha: 6,
+          blur: 8,
+          angle: Math.PI / 6,
+          distance: 4
+        },
+        fill: new PIXI.FillGradient({
+          colorStops: [
+            { offset: 0, color: '#FFD700' },
+            { offset: 1, color: '#FFA500' }
+          ]
+        }),
         fontSize: 36
       },
       anchor: 0.5
     });
+    
     heroText.layout = true;
     
     this._UIHeader?.addChild(heroText);
@@ -130,18 +163,58 @@ export default class CMainUI extends CContainer {
       this._btnSpin.eventMode = 'static';
       this._btnSpin.on('pointerdown', () => this.onSpinBtnClick());
       
+      const testButtonStyles: PIXI.TextStyleOptions = {
+        stroke: {
+          color: '#000', // Dark brown border
+          width: 5,
+          join: 'round'
+        },
+        fill: '#ffffff',
+        fontSize: 24
+      };
+      
+      const btnTest_1 = new PIXI.Text({
+        text: 'TEST 1',
+        style: testButtonStyles,
+        anchor: 0.5
+      });
+      btnTest_1.layout = true;
+      
+      const btnTest_2 = new PIXI.Text({
+        text: 'TEST 2',
+        style: testButtonStyles,
+        anchor: 0.5
+      });
+      btnTest_2.layout = true;
+      
+      const btnTest_3 = new PIXI.Text({
+        text: 'TEST 3',
+        style: testButtonStyles,
+        anchor: 0.5
+      });
+      btnTest_3.layout = true;
+      
+      const btnTest_4 = new PIXI.Text({
+        text: 'TEST 4',
+        style: testButtonStyles,
+        anchor: 0.5
+      });
+      btnTest_4.layout = true;
+      
+      this._UIActionButtons?.addChild(btnTest_1, btnTest_2, this._btnSpin, btnTest_3, btnTest_4);
+      
       
       const ResultText = new PIXI.Text({
         text: this._ResultText || '',
         style: {
           fill: '#ffffff',
-          fontSize: 26
+          fontSize: 32
         },
         anchor: 0.5
       });
       ResultText.layout = true;
       
-      this._UIFooter?.addChild(this._btnSpin, ResultText);
+      this._UIFooter?.addChild(ResultText);
     });
     
   }

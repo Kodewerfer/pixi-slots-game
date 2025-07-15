@@ -15,8 +15,9 @@ import { gsap } from 'gsap';
 const RENDER_TARGET_ID = 'pixi-render-target';
 const LOADING_SCREEN_BG = '#313638';
 const MAIN_SCREEN_BG = '#E0DFD5';
-const MAIN_SCREEN_BG_RGB = [49, 54, 56, 1.0];
 const SYMBOL_MAX_SIZE = 150;
+
+const bSKIP_LOADING_SCREEN = true; //debugging
 
 // ---assets
 const BundleManifest = {
@@ -57,7 +58,7 @@ async function OnInitComplete(GameApp: PApp) {
   loadingScreen.addEventListener(CLoadingScreen.EVENT_START_CLICKED, () => {
     
     // switch to main level on clicking start
-    if (bIsMainGameReady) {
+    if (bIsMainGameReady && !bSKIP_LOADING_SCREEN) {
       GameApp.CurrentLevel = SlotsLevel;
       // simple change changing effect
       // this sets semi-transparent color midway, so it will trigger a warning in color
@@ -80,7 +81,7 @@ async function OnInitComplete(GameApp: PApp) {
     
     // a bit of a cheap trick to make sure the loading process is visible
     lastProgress.push(progress);
-    if (!progressTimeOut) {
+    if (!progressTimeOut && !bSKIP_LOADING_SCREEN) {
       const updateProgress = () => {
         if (!lastProgress.length) return;
         if (progressTimeOut) clearTimeout(progressTimeOut);
@@ -113,6 +114,12 @@ async function OnInitComplete(GameApp: PApp) {
       SlotsLevel.Container.addChild(initializedSlotReels, SlotsUI);
       // set the ready flag
       bIsMainGameReady = true;
+      
+      if (bSKIP_LOADING_SCREEN) {
+        GameApp.Instance.renderer.background.color = MAIN_SCREEN_BG;
+        GameApp.CurrentLevel = SlotsLevel;
+      }
+      
     })
     .catch((error) => {
       console.log('Asset loading failed, ', error);
