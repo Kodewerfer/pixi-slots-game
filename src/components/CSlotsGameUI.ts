@@ -3,10 +3,19 @@ import CContainer from '../core/CContainer.ts';
 import PSlotsGameMode from './PSlotsGameMode.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import { gsap } from 'gsap';
+import { Ticker } from 'pixi.js';
 
 export default class CSlotsGameUI extends CContainer {
   
   public static readonly BTN_SPIN_SIZE = 180;
+  
+  public static readonly _UI_SHORTSCREEN_BREAKPOINT = 800;
+  public static readonly _UI_TALLSCREEN_BREAKPOINT = 1500;
+  
+  // used in onResize()
+  public static readonly _UIFOOTER_MARGIN_B_SHORTSCREEN = '5%';
+  public static readonly _UIFOOTER_MARGIN_B_NORMAL = '15%';
+  public static readonly _UIFOOTER_MARGIN_B_TALLSCREEN = '20%';
   
   private readonly _UIHeader: CContainer | undefined;
   private readonly _UIFooter: CContainer | undefined;
@@ -50,7 +59,7 @@ export default class CSlotsGameUI extends CContainer {
       position: 'absolute',
       width: '100%',
       height: 'auto',
-      marginBottom: '15%',
+      marginBottom: CSlotsGameUI._UIFOOTER_MARGIN_B_NORMAL,
       bottom: 0,
       flexDirection: 'column',
       alignItems: 'center',
@@ -63,6 +72,8 @@ export default class CSlotsGameUI extends CContainer {
     this._UIActionButtons.layout = {
       width: '100%',
       height: 'auto',
+      flexShrink: 0,
+      flexGrow: 0,
       // marginBottom: '15%',
       flexDirection: 'row',
       alignItems: 'center',
@@ -156,7 +167,9 @@ export default class CSlotsGameUI extends CContainer {
         texture: assets['spinBtn']
       });
       
-      this._btnSpin.layout = true;
+      this._btnSpin.layout = {
+        flexShrink: 0
+      };
       
       // clicking
       this._btnSpin.cursor = 'pointer';
@@ -233,5 +246,31 @@ export default class CSlotsGameUI extends CContainer {
   
   protected onResize() {
     super.onResize();
+    
+    const screenHeight = this.GameApp?.Screen?.height;
+    
+    // effectively responsive breakpoints
+    // footer will be placed too high as to cover the main area otherwise
+    if (!this._UIFooter || !screenHeight) return;
+    
+    if (screenHeight <= CSlotsGameUI._UI_SHORTSCREEN_BREAKPOINT)
+      this._UIFooter.layout = {
+        marginBottom: CSlotsGameUI._UIFOOTER_MARGIN_B_SHORTSCREEN
+      };
+    
+    else if (screenHeight >= CSlotsGameUI._UI_TALLSCREEN_BREAKPOINT)
+      this._UIFooter.layout = {
+        marginBottom: CSlotsGameUI._UIFOOTER_MARGIN_B_TALLSCREEN
+      };
+    
+    else
+      this._UIFooter.layout = {
+        marginBottom: CSlotsGameUI._UIFOOTER_MARGIN_B_NORMAL
+      };
   }
+  
+  protected onTick(ticker: Ticker) {
+    super.onTick(ticker);
+  }
+  
 }
