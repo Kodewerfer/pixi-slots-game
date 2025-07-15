@@ -15,11 +15,14 @@ export default class CReel extends CContainer {
   
   private _BandID: number | undefined;
   
+  
   private _ReelStripSet: string[] = [];
   private _AssetsDictionary: TAssetsDictionary | undefined;
   
   private _CurrentPosition = 0;
   private _PreviousPosition = 0;
+  
+  private _PositionText: PIXI.Text | undefined;
   
   private readonly _BlurFilter: BlurFilter | undefined;// reel's blur filter for better animation effect.
   
@@ -93,6 +96,7 @@ export default class CReel extends CContainer {
       this.addSymbol(SymbolSprite);
     }
     
+    this.addPositionText();
     return this;
   }
   
@@ -105,6 +109,26 @@ export default class CReel extends CContainer {
     
     this.ReelSymbolsArray.push(symbolSprite);
     this.addChild(symbolSprite);
+  }
+  
+  private addPositionText() {
+    this._PositionText = new PIXI.Text({
+      anchor: 0,
+      text: `Pos:${this.CurrentPosition}`,
+      style: {
+        stroke: { color: '#000', width: 4, join: 'round' },
+        fill: '#ffffff',
+        fontSize: 25
+      }
+    });
+    this._PositionText.label = 'Reel Debug Text';
+    this._PositionText.position.set(25, -50);
+    this.addChild(this._PositionText);
+  }
+  
+  private updatePositionText() {
+    if (this._PositionText)
+      this._PositionText.text = `Pos:${Math.round(this.CurrentPosition)}`;
   }
   
   //animates the reel according to reel's position information
@@ -141,6 +165,8 @@ export default class CReel extends CContainer {
         });
       }
     }
+    
+    this.updatePositionText();
   }
   
   protected onResize() {
