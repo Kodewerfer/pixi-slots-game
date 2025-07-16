@@ -1,8 +1,8 @@
+import * as PIXI from 'pixi.js';
 import CContainer from '../core/CContainer.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import TAssetsDictionary from '../types/TAssetsDictionary.ts';
 import { BlurFilter, Ticker } from 'pixi.js';
-import * as PIXI from 'pixi.js';
 
 
 export default class CReel extends CContainer {

@@ -60,7 +60,8 @@ async function OnInitComplete(GameApp: PApp) {
     // switch to main level on clicking start
     if (bIsMainGameReady && !bSKIP_LOADING_SCREEN) {
       GameApp.CurrentLevel = SlotsLevel;
-      // simple change changing effect
+      GameApp.CurrentGameMode = SlotsGameMode;
+      // simple color changing effect
       // this sets semi-transparent color midway, so it will trigger a warning in console
       gsap.to(GameApp.Instance.renderer.background, {
         'color': MAIN_SCREEN_BG,

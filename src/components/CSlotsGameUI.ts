@@ -3,7 +3,6 @@ import CContainer from '../core/CContainer.ts';
 import PSlotsGameMode from './PSlotsGameMode.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import { gsap } from 'gsap';
-import { TLineResult } from '../types/TWinLinesResults.ts';
 
 export default class CSlotsGameUI extends CContainer {
   
@@ -270,9 +269,7 @@ export default class CSlotsGameUI extends CContainer {
     
     
     let numEmptyLines = 0;
-    Object.keys(spinResult).map((paylineNumber: string) => {
-      
-      let lineResult: TLineResult = spinResult[paylineNumber];
+    spinResult.map((lineResult, arrayIndex) => {
       
       if (!lineResult.points) { //empty result
         numEmptyLines++;
@@ -282,7 +279,7 @@ export default class CSlotsGameUI extends CContainer {
       // if point exist there must be a symbol as key
       const symbolName = Object.keys(lineResult)[0];
       
-      finalText += `\nPayline${paylineNumber} :  ${symbolName}  x  ${lineResult[symbolName]},  Points: ${lineResult.points}`;
+      finalText += `\nPayline${arrayIndex + 1} :  ${symbolName}  x  ${lineResult[symbolName]},  Points: ${lineResult.points}`;
       
     });
     

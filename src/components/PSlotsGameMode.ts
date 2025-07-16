@@ -47,15 +47,15 @@ export default class PSlotsGameMode extends PGameMode {
    *              |      x - - - x
    */
     // Define win line patterns, the number in the array is where the "line" is in each col (taking in a 5 col by 3 rows matrix of symbols)
-  public static WIN_CONDITION_PATTERNS: { [id: string]: number[] } = {
-    1: [0, 0, 0, 0, 0],
-    2: [1, 1, 1, 1, 1],
-    3: [2, 2, 2, 2, 2],
-    4: [0, 0, 1, 2, 2],
-    5: [2, 2, 1, 0, 0],
-    6: [0, 1, 2, 1, 0],
-    7: [2, 1, 0, 1, 2]
-  };
+  public static WIN_CONDITION_PATTERNS = [
+    [0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1],
+    [2, 2, 2, 2, 2],
+    [0, 0, 1, 2, 2],
+    [2, 2, 1, 0, 0],
+    [0, 1, 2, 1, 0],
+    [2, 1, 0, 1, 2]
+  ];
   
   /**
    *  Symbol id | 3 of a kind | 4 of a kind | 5 of a kind
@@ -154,7 +154,13 @@ export default class PSlotsGameMode extends PGameMode {
     }
   }
   
-  // check a given win line, and return connected 3 symbols
+  /**
+   *  check a given win line, and return connected 3 symbols
+   *  extract all symbols of the inputs, from a win line, to form a new array, then check the array for consecutive strings
+   *  do this for all seven win lines
+   *  if there is no win, returns an empty object
+   * @param matrix
+   */
   public calculateWinLines(matrix: string[][]) {
     // Validate input matrix
     if (matrix.length !== 3 || matrix.some(row => row.length !== 5)) {
@@ -177,12 +183,12 @@ export default class PSlotsGameMode extends PGameMode {
     };
     
     // Process all win lines
-    const results: TWinLinesResults = {};
+    const results: TWinLinesResults = [];
     
-    Object.keys(winLines).forEach(lineId => {
-      const pattern = winLines[lineId as keyof typeof winLines];
-      const symbols = pattern.map((rowIdx, colIdx) => matrix[rowIdx][colIdx]);
-      results[lineId] = checkConsecutiveSymbols(symbols);
+    winLines.map((winPattern) => {
+      // extract all symbols of the input from a win line
+      const symbols = winPattern.map((rowIdx, colIdx) => matrix[rowIdx][colIdx]);
+      results.push(checkConsecutiveSymbols(symbols));
     });
     
     return results;
@@ -193,23 +199,28 @@ export default class PSlotsGameMode extends PGameMode {
     const pointsTable = PSlotsGameMode.POINTS_LOOKUP_TABLE;
     
     // Process each win line from 1-7
-    for (const lineId in winResults) {
-      
-      const winResult = winResults[lineId];
-      
-      if (Object.keys(winResult).length > 0) { //have a win in that win line
+    winResults.map(winlineResult => {
+      if (Object.keys(winlineResult).length > 0) { //have a win in that win line
         
-        const symbolName = Object.keys(winResult)[0];
-        const nOfAKind: number = (winResult[symbolName]) as number;
+        const symbolName = Object.keys(winlineResult)[0];
+        const nOfAKind: number = (winlineResult[symbolName]) as number;
         
         if (pointsTable[symbolName] && pointsTable[symbolName][nOfAKind]) {
-          winResult.points = pointsTable[symbolName][nOfAKind];
+          winlineResult.points = pointsTable[symbolName][nOfAKind];
         }
         
       }
-    }
+    });
     
     return winResults;
+  }
+  
+  public calculateActiveElements(winResults: TWinLinesResults) {
+    
+    // Object.keys(winResults).map(winResult=>{
+    //   // if(winResult.)
+    // })
+    
   }
   
   protected onFinishedSpinning() {
