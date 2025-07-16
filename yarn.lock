@@ -272,14 +272,6 @@
     its-fine "^2.0.0"
     react-reconciler "0.31.0"
 
-"@pixi/ui@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@pixi/ui/-/ui-2.2.4.tgz#ea76efa3d8208c266e132a66d355f2e658069b1e"
-  integrity sha512-/OVdrC5F7qomRsAubHOtgiOSWLM85Yrod6MMgVQnD/qTDj4OSaxlmx2l8dMFUX6Bjslkl9dUN92vv8bM103BnQ==
-  dependencies:
-    tweedle.js "^2.1.0"
-    typed-signals "^2.5.0"
-
 "@rollup/rollup-android-arm-eabi@4.44.2":
   version "4.44.2"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.44.2.tgz#6819b7f1e41a49af566f629a1556eaeea774d043"
@@ -1349,11 +1341,6 @@ picomatch@^4.0.2:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.2.tgz#77c742931e8f3b8820946c76cd0c1f13730d1dab"
   integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
-pixi-actions@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/pixi-actions/-/pixi-actions-1.2.4.tgz#d54c0b02ab40ccba27f696dae2cad56e19dfc7c0"
-  integrity sha512-9kw0o8VOCBIi1STblRNnZiz2jskUSC6Bt5ekJPeGyG9lud6Qa8URZBqU3qGBnawLlj5u3jMXjGg21fU9kic6OQ==
-
 pixi-filters@^6.1.3:
   version "6.1.3"
   resolved "https://registry.yarnpkg.com/pixi-filters/-/pixi-filters-6.1.3.tgz#5436f803b821095178a46a2366646e7914d59363"
@@ -1589,22 +1576,12 @@ ts-api-utils@^2.1.0:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-2.1.0.tgz#595f7094e46eed364c13fd23e75f9513d29baf91"
   integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
 
-tweedle.js@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/tweedle.js/-/tweedle.js-2.1.0.tgz#523f5d50e5223c3c809b1aa627c6e9648e576d93"
-  integrity sha512-0ReQgVjepoZkE6t0upWNgCRbplHkQJQYk1LStXugwSR728GLFmGDRuaQJlxeC/iBlxud6+P1RdODjaO25vHAqw==
-
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/type-check/-/type-check-0.4.0.tgz#07b8203bfa7056c0657050e3ccd2c37730bab8f1"
   integrity sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==
   dependencies:
     prelude-ls "^1.2.1"
-
-typed-signals@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/typed-signals/-/typed-signals-2.5.0.tgz#7be73505c2ee0dc4e43f1c4ee002c855796bd89a"
-  integrity sha512-m9lHc3eBCJerXYdx+G0uWZihyUXdqTzzgOdqiDDsoUo75WjhFJH6vP5/6w/xhyu04zoxHUqgYhf9FEt85dk/Ng==
 
 typescript-eslint@^8.25.0:
   version "8.36.0"
@@ -1626,11 +1603,6 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
-
-uuid@^11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.1.0.tgz#9549028be1753bb934fc96e2bca09bb4105ae912"
-  integrity sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==
 
 vite-node@3.2.4:
   version "3.2.4"
