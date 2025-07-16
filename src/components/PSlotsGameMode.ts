@@ -11,8 +11,13 @@ export default class PSlotsGameMode extends PGameMode {
   
   
   // the main UI will make use of both of these events.
-  public static EVEN_SPIN_STARTED = 'SPIN_STARTED'; //fires as soon as conditions are met, before tweening begins.
-  public static EVEN_SPIN_FINISHED = 'SPIN_FINISHED'; //fires only after calculation is complete.
+  public static EVENT_SPIN_STARTED = 'SPIN_STARTED'; //fires as soon as conditions are met, before tweening begins.
+  public static EVENT_SPIN_FINISHED = 'SPIN_FINISHED'; //fires only after calculation is complete.
+  
+  // rando algo params
+  public static REEL_LENGTH = 20;
+  public static BASE_SPINS = 1;
+  public static EXTRA_SPINS = 1;
   
   
   /**
@@ -92,8 +97,10 @@ export default class PSlotsGameMode extends PGameMode {
   public GameRunning: boolean = false;
   // @ts-ignore unused warning, no real use for these two for now.
   private _LatestSpinResultRaw: string[][] = [];
-  // @ts-ignore unused warning
-  public LastestSpinResultProcessed: TWinLinesResults;
+  
+  // these two will be consumed by UI
+  public LastestSpinResultProcessed: TWinLinesResults = [];
+  public LastestActiveElementsMatrixTransposed: number[][][] = []; // this value is transposed so that it matches the actual elements structure
   
   
   public ReelsWrapper: CReelsWrapper | undefined = undefined;
@@ -120,35 +127,47 @@ export default class PSlotsGameMode extends PGameMode {
     if (this.GameRunning) return;
     this.GameRunning = true;
     
-    this.emit(PSlotsGameMode.EVEN_SPIN_STARTED, this);
+    this.emit(PSlotsGameMode.EVENT_SPIN_STARTED, this);
     console.info('Spinning Begins');
     
     let ReelsMaxIndex = this.ReelsWrapper.ReelsArray.length;
     
     for (let reelIndex = 0; reelIndex < ReelsMaxIndex; reelIndex++) {
-      // the rando algo here is way too simple
-      const reel = (this.ReelsWrapper.ReelsArray[reelIndex]) as CReel;
-      const randomOffset = Math.floor(Math.random() * 3);
+      const reel = this.ReelsWrapper.ReelsArray[reelIndex] as CReel;
       
-      let spinTargetPosition = reel.CurrentPosition + 10 + reelIndex * 5 + randomOffset;
+      // Generate random offset for duration variance (0-2)
+      const durationRandomOffset = Math.floor(Math.random() * 3);
+      
+      let spinTargetPosition;
+      
       if (toPositions && toPositions.length === ReelsMaxIndex) {
-        // override the rando number if the param is provided
+        // Use predefined target position
         spinTargetPosition = toPositions[reelIndex];
+      } else {
+        const finalStop = Math.floor(Math.random() * PSlotsGameMode.REEL_LENGTH);
+        
+        let minimalDistance = (finalStop - reel.CurrentPosition) % PSlotsGameMode.REEL_LENGTH;
+        if (minimalDistance < 0) minimalDistance += PSlotsGameMode.REEL_LENGTH;
+        
+        const fullSpins = (PSlotsGameMode.BASE_SPINS + PSlotsGameMode.EXTRA_SPINS + reelIndex) * PSlotsGameMode.REEL_LENGTH;
+        
+        spinTargetPosition = reel.CurrentPosition + fullSpins + minimalDistance;
       }
       
-      const spinTime = 2500 + reelIndex * 600 + randomOffset * 600;
+      const spinTime = 2500 + reelIndex * 600 + durationRandomOffset * 600;
       
-      console.log(`spinTargetPosition for Reel ${reelIndex + 1} = ${spinTargetPosition}`);
+      console.log(`Reel ${reelIndex + 1} stopping at: ${
+        spinTargetPosition % PSlotsGameMode.REEL_LENGTH
+      } (target pos: ${spinTargetPosition})`);
       
-      
-      // tween the CurrentPosition of a Reel according to the rando value
       gsap.to(reel, {
         'CurrentPosition': spinTargetPosition,
-        duration: spinTime / 1000,// Convert to seconds
+        duration: spinTime / 2000, //shorten the time by half for better demo
         ease: 'back.out',
         onComplete: () => {
-          if (reelIndex === ReelsMaxIndex - 1)
+          if (reelIndex === ReelsMaxIndex - 1) {
             this.onFinishedSpinning();
+          }
         }
       });
     }
@@ -225,7 +244,7 @@ export default class PSlotsGameMode extends PGameMode {
     
     const winLines = PSlotsGameMode.WIN_CONDITION_PATTERNS;
     // each result will be a representation of the matrix, 0 as passive, 1 as active.
-    const allActiveMatrix: number[][][] = []; // have to use a 3d array now, this is getting out of hand
+    const allActiveMatrixTransposed: number[][][] = []; // have to use a 3d array now, this is getting out of hand
     
     winResults.map((winResult, winLineIndex) => {
       
@@ -243,11 +262,12 @@ export default class PSlotsGameMode extends PGameMode {
         resultMatrix[row][col] = 1;
       }
       
-      allActiveMatrix.push(resultMatrix);
+      // transpose the result matrix so it will be easier for the UI to consume
+      allActiveMatrixTransposed.push(PSlotsGameMode.transposeMatrix(resultMatrix));
       
     });
     
-    return allActiveMatrix;
+    return allActiveMatrixTransposed;
     
   }
   
@@ -267,9 +287,11 @@ export default class PSlotsGameMode extends PGameMode {
     console.log(`Spin Result transposed: `, transposeMatrix);
     
     const winLinesData = this.calculateWinLines(transposeMatrix);
-    this.LastestSpinResultProcessed = this.addPointsToWins(winLinesData);
     
-    this.emit(PSlotsGameMode.EVEN_SPIN_FINISHED, this); //UI will use this event
+    this.LastestSpinResultProcessed = this.addPointsToWins(winLinesData);
+    this.LastestActiveElementsMatrixTransposed = this.calculateActiveElements(this.LastestSpinResultProcessed);
+    
+    this.emit(PSlotsGameMode.EVENT_SPIN_FINISHED, this); //UI will use this event
   }
   
   // Transpose a 2D array (matrix).

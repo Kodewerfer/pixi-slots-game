@@ -144,7 +144,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   // could use a loop here but this looks less confusing
   const ReelOne = new CReel();
   ReelOne.buildReel({
-    bandIndex: 1,
+    bandID: 1,
     assetsDictionary: assetsDictionary,
     reelSet: ['hv2', 'lv3', 'lv3', 'hv1', 'hv1', 'lv1', 'hv1', 'hv4', 'lv1', 'hv3', 'hv2', 'hv3', 'lv4', 'hv4', 'lv1', 'hv2', 'lv4', 'lv1', 'lv3', 'hv2'],
     symbolMaxSize: SYMBOL_MAX_SIZE
@@ -152,7 +152,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   
   const ReelTwo = new CReel();
   ReelTwo.buildReel({
-    bandIndex: 2,
+    bandID: 2,
     assetsDictionary: assetsDictionary,
     reelSet: ['hv1', 'lv2', 'lv3', 'lv2', 'lv1', 'lv1', 'lv4', 'lv1', 'lv1', 'hv4', 'lv3', 'hv2', 'lv1', 'lv3', 'hv1', 'lv1', 'lv2', 'lv4', 'lv3', 'lv2'],
     symbolMaxSize: SYMBOL_MAX_SIZE
@@ -160,7 +160,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   
   const ReelThree = new CReel();
   ReelThree.buildReel({
-    bandIndex: 3,
+    bandID: 3,
     assetsDictionary: assetsDictionary,
     reelSet: ['lv1', 'hv2', 'lv3', 'lv4', 'hv3', 'hv2', 'lv2', 'hv2', 'hv2', 'lv1', 'hv3', 'lv1', 'hv1', 'lv2', 'hv3', 'hv2', 'hv4', 'hv1', 'lv2', 'lv4'],
     symbolMaxSize: SYMBOL_MAX_SIZE
@@ -168,7 +168,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   
   const ReelFour = new CReel();
   ReelFour.buildReel({
-    bandIndex: 4,
+    bandID: 4,
     assetsDictionary: assetsDictionary,
     reelSet: ['hv2', 'lv2', 'hv3', 'lv2', 'lv4', 'lv4', 'hv3', 'lv2', 'lv4', 'hv1', 'lv1', 'hv1', 'lv2', 'hv3', 'lv2', 'lv3', 'hv2', 'lv1', 'hv3', 'lv2'],
     symbolMaxSize: SYMBOL_MAX_SIZE
@@ -176,7 +176,7 @@ function initializeSlotReels(assetsDictionary: {}) {
   
   const ReelFive = new CReel();
   ReelFive.buildReel({
-    bandIndex: 5,
+    bandID: 5,
     assetsDictionary: assetsDictionary,
     reelSet: ['lv3', 'lv4', 'hv2', 'hv3', 'hv4', 'hv1', 'hv3', 'hv2', 'hv2', 'hv4', 'hv4', 'hv2', 'lv2', 'hv4', 'hv1', 'lv2', 'hv1', 'lv2', 'hv4', 'lv4'],
     symbolMaxSize: SYMBOL_MAX_SIZE

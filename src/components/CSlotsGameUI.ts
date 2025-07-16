@@ -53,8 +53,8 @@ export default class CSlotsGameUI extends CContainer {
   set GameMode(value: PSlotsGameMode) {
     this._GameMode = value;
     
-    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_STARTED, this.onStartSpinning.bind(this));
-    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_FINISHED, this.onFinishSpin.bind(this));
+    this._GameMode.addListener(PSlotsGameMode.EVENT_SPIN_STARTED, this.onStartSpinning.bind(this));
+    this._GameMode.addListener(PSlotsGameMode.EVENT_SPIN_FINISHED, this.onFinishSpin.bind(this));
   }
   
   

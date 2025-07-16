@@ -19,12 +19,15 @@ export default class SSymbolSprite extends SSprite {
     this.filters = this._ColorFilter;
   }
   
-  set OverlayColorHex(value: string) {
+  set highLightColorHex(value: string) {
     this._ColorFilter.color = value;
   }
   
-  set OverlayColorAlpha(value: number) {
-    this._ColorFilter.alpha = value;
+  set bIsHighLighted(value: boolean) {
+    if (value)
+      this._ColorFilter.alpha = 1;
+    else
+      this._ColorFilter.alpha = 0;
   }
   
   

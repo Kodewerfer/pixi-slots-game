@@ -17,6 +17,8 @@ export default class PApp extends EventEmitter {
   
   public static readonly EVENT_INITIALIZE_SUCCESS: string = 'INITIALIZE_SUCCESS';
   public static readonly EVENT_INITIALIZE_FAILED: string = 'INITIALIZE_FAILED';
+  public static readonly EVENT_GAMEMODE_SET: string = 'GAMEMODE_SET';
+  public static readonly EVENT_LEVEL_CHANGED: string = 'LEVEL_CHANGED';
   public static readonly EVENT_RESIZE: string = 'RESIZE';
   
   
@@ -65,6 +67,8 @@ export default class PApp extends EventEmitter {
     }
     this._CurrentLevel = newLevel;
     newLevel?.onActive(this);
+    
+    this.emit(PApp.EVENT_LEVEL_CHANGED, this.CurrentLevel);
   }
   
   set CurrentGameMode(gameMode: PGameMode | null) {
@@ -78,6 +82,8 @@ export default class PApp extends EventEmitter {
     
     this._CurrentGameMode = gameMode;
     gameMode.onActive(this);
+    
+    this.emit(PApp.EVENT_GAMEMODE_SET, this._CurrentGameMode);
   }
   
   get Screen() {

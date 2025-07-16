@@ -2,7 +2,10 @@ import * as PIXI from 'pixi.js';
 import CContainer from '../core/CContainer.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import TAssetsDictionary from '../types/TAssetsDictionary.ts';
-import { BlurFilter, Ticker } from 'pixi.js';
+import { Ticker } from 'pixi.js';
+import PSlotsGameMode from './PSlotsGameMode.ts';
+import PApp from '../core/PApp.ts';
+import PGameMode from '../core/PGameMode.ts';
 
 
 export default class CReel extends CContainer {
@@ -24,19 +27,37 @@ export default class CReel extends CContainer {
   
   private _PositionText: PIXI.Text | undefined;
   
-  private readonly _BlurFilter: BlurFilter | undefined;// reel's blur filter for better animation effect.
+  private _BlurFilter = new PIXI.BlurFilter();// reel's blur filter for better animation effect.
   
   
   constructor(options?: PIXI.ContainerOptions<PIXI.ContainerChild>) {
     super(options);
+    this.setUpBlurFilter();
+  }
+  
+  // bind to spin finish
+  onAddedToStage(GameApp: any) {
+    super.onAddedToStage(GameApp);
     
+    GameApp.addListener(PApp.EVENT_GAMEMODE_SET, (gameMode: PGameMode) => {
+      if (gameMode instanceof PSlotsGameMode) {
+        
+        // bind for later spins
+        gameMode.addListener(PSlotsGameMode.EVENT_SPIN_FINISHED, this.highLightActiveSprites.bind(this));
+        gameMode.addListener(PSlotsGameMode.EVENT_SPIN_STARTED, this.cancelAllHighLights.bind(this));
+        
+        // immediately check once
+        this.highLightActiveSprites();
+        
+      }
+    });
     
-    // Initialize blur filter for motion effect
-    this._BlurFilter = new PIXI.BlurFilter();
-    this._BlurFilter.strengthX = 0;
-    this._BlurFilter.strengthY = 0;
-    this.filters = [this._BlurFilter];
+  }
+  
+  onRemovedFromStage(GameApp: any) {
+    super.onRemovedFromStage(GameApp);
     
+    GameApp.CurrentGameMode!.removeListener(PSlotsGameMode.EVENT_SPIN_FINISHED, this.highLightActiveSprites.bind(this));
   }
   
   
@@ -56,15 +77,69 @@ export default class CReel extends CContainer {
     return this._BandID;
   }
   
+  /**
+   * this function marks the sprites as highlighted after the latest spin result.
+   * right now all win lines use the same high light color.
+   */
+  public highLightActiveSprites() {
+    if (!this.GameApp || !this.GameApp.CurrentGameMode) return;
+    if (!this.ReelSymbolsArray.length) return;
+    
+    if (!this._BandID) {
+      console.error('Reel hightlight: No BandID');
+      return;
+    }
+    
+    const reelIndex = this._BandID - 1;
+    if (reelIndex < 0) {
+      console.error('Reel hightlight: Invalid reel index');
+      return;
+    }
+    
+    const allActiveElements = (this.GameApp.CurrentGameMode as PSlotsGameMode).LastestActiveElementsMatrixTransposed;
+    if (!allActiveElements.length) return;
+    
+    console.log('checking high light');
+    allActiveElements.forEach((allReels) => {
+      // each of them a representation of all reels of a win line.
+      const activeElementsOfThisReel = allReels[reelIndex];
+      
+      activeElementsOfThisReel.forEach((isActive, index) => {
+        // set the overlay, do nothing if not active
+        if (isActive === 1)
+          this.ReelSymbolsArray[index].bIsHighLighted = true;
+        
+      });
+    });
+    
+    
+  }
   
-  public buildReel({ reelSet, assetsDictionary, bandIndex, symbolMaxSize }: {
-    bandIndex: number,
+  // resets all high light
+  public cancelAllHighLights() {
+    this.ReelSymbolsArray.forEach((ssprite) => {
+      ssprite.bIsHighLighted = false;
+    });
+  }
+  
+  private setUpBlurFilter() {
+    // Initialize blur filter for motion effect
+    this._BlurFilter.strengthX = 0;
+    this._BlurFilter.strengthY = 0;
+    this.filters = [this._BlurFilter];
+  }
+  
+  public buildReel({ reelSet, assetsDictionary, bandID, symbolMaxSize }: {
+    bandID: number,
     reelSet: string[],
     assetsDictionary: TAssetsDictionary,
     symbolMaxSize?: number,
   }) {
     
-    this._BandID = bandIndex;
+    if (bandID < 1)
+      throw new Error('Build Reel: Reel BandID cannot be less than 1');
+    
+    this._BandID = bandID;
     this._ReelStripSet = reelSet;
     this._AssetsDictionary = assetsDictionary;
     this.ReelSymbolSize = symbolMaxSize;
@@ -76,7 +151,7 @@ export default class CReel extends CContainer {
     this.layout?.forceUpdate();
     
     // for debugging
-    this.label = `Reel-${bandIndex}`;
+    this.label = `Reel-${bandID}`;
     
     // build up to CReel.SYMBOL_COUNT number of symbols using the reelset and assets
     for (let index = 0; index < CReel.SYMBOL_COUNT; index++) {
