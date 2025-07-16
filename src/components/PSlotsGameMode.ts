@@ -150,7 +150,7 @@ export default class PSlotsGameMode extends PGameMode {
         let minimalDistance = (finalStop - reel.CurrentPosition) % PSlotsGameMode.REEL_LENGTH;
         if (minimalDistance < 0) minimalDistance += PSlotsGameMode.REEL_LENGTH;
         
-        const fullSpins = (PSlotsGameMode.BASE_SPINS + PSlotsGameMode.EXTRA_SPINS + reelIndex) * PSlotsGameMode.REEL_LENGTH;
+        const fullSpins = PSlotsGameMode.BASE_SPINS + PSlotsGameMode.EXTRA_SPINS + reelIndex;
         
         spinTargetPosition = reel.CurrentPosition + fullSpins + minimalDistance;
       }
@@ -163,7 +163,7 @@ export default class PSlotsGameMode extends PGameMode {
       
       gsap.to(reel, {
         'CurrentPosition': spinTargetPosition,
-        duration: spinTime / 2000, //shorten the time by half for better demo
+        duration: spinTime / 1000, //shorten the time by half for better demo
         ease: 'back.out',
         onComplete: () => {
           if (reelIndex === ReelsMaxIndex - 1) {
