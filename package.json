@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "test": "vitest",
+    "test": "vitest --silent=false",
     "test:watch": "jest --watch",
     "build": "npm run lint && tsc && vite build",
     "lint": "eslint .",
