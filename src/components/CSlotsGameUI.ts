@@ -3,27 +3,27 @@ import CContainer from '../core/CContainer.ts';
 import PSlotsGameMode from './PSlotsGameMode.ts';
 import SSymbolSprite from './SSymbolSprite.ts';
 import { gsap } from 'gsap';
-import { Ticker } from 'pixi.js';
+import { TLineResult } from '../types/TWinLinesResults.ts';
 
 export default class CSlotsGameUI extends CContainer {
   
   public static readonly BTN_SPIN_SIZE = 180;
   
   public static readonly _UI_SHORTSCREEN_BREAKPOINT = 800;
-  public static readonly _UI_TALLSCREEN_BREAKPOINT = 1500;
+  public static readonly _UI_TALLSCREEN_BREAKPOINT = 1200;
   
   // used in onResize()
-  public static readonly _UIFOOTER_MARGIN_B_SHORTSCREEN = '5%';
-  public static readonly _UIFOOTER_MARGIN_B_NORMAL = '15%';
-  public static readonly _UIFOOTER_MARGIN_B_TALLSCREEN = '20%';
+  public static readonly _UIFOOTER_MARGIN_B_SHORTSCREEN = '-10%';
+  public static readonly _UIFOOTER_MARGIN_B_NORMAL = '0%';
+  public static readonly _UIFOOTER_MARGIN_B_TALLSCREEN = '6%';
   
-  private readonly _UIHeader: CContainer | undefined;
-  private readonly _UIFooter: CContainer | undefined;
-  private readonly _UIActionButtons: CContainer | undefined;
+  private _UIHeader: CContainer | undefined;
+  private _UIFooter: CContainer | undefined;
+  private _UIActionButtons: CContainer | undefined;
   
   private _GameMode: PSlotsGameMode | undefined;
   
-  private _ResultText: string | undefined;
+  private _ResultText: PIXI.Text | undefined;
   
   private _btnSpin: SSymbolSprite | undefined;
   
@@ -40,6 +40,26 @@ export default class CSlotsGameUI extends CContainer {
       position: 'absolute',
       transformOrigin: 'center'
     };
+    
+    this.setUpUIContainers();
+    
+    this.addHeroText();
+    this.setUpSpinButtonAndResultText();
+    
+    this.reScaleWithBaseRes();
+    
+  }
+  
+  
+  set GameMode(value: PSlotsGameMode) {
+    this._GameMode = value;
+    
+    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_STARTED, this.onStartSpinning.bind(this));
+    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_FINISHED, this.onFinishSpin.bind(this));
+  }
+  
+  
+  private setUpUIContainers() {
     
     this._UIHeader = new CContainer({ scaleWithBaseRes: true });
     this._UIHeader.label = 'UI_HEADER';
@@ -63,8 +83,8 @@ export default class CSlotsGameUI extends CContainer {
       bottom: 0,
       flexDirection: 'column',
       alignItems: 'center',
-      gap: 5,
-      justifyContent: 'space-around'
+      gap: 0,
+      justifyContent: 'center'
     };
     
     this._UIActionButtons = new CContainer();
@@ -83,40 +103,6 @@ export default class CSlotsGameUI extends CContainer {
     this._UIFooter.addChild(this._UIActionButtons);
     
     this.addChild(this._UIHeader, this._UIFooter);
-    
-    this.addHeroText();
-    this.setUpSpinButtonAndResult();
-    
-    this.reScaleWithBaseRes();
-    
-  }
-  
-  set ResultText(resultText: string) {
-    this._ResultText = resultText;
-  }
-  
-  set GameMode(value: PSlotsGameMode) {
-    this._GameMode = value;
-    
-    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_STARTED, this.onStartSpinning.bind(this));
-    this._GameMode.addListener(PSlotsGameMode.EVEN_SPIN_FINISHED, this.onFinishSpin.bind(this));
-  }
-  
-  // fade and unfade the spin button(s)
-  private onStartSpinning() {
-    if (!this._UIActionButtons) return;
-    gsap.to(this._UIActionButtons, {
-      'alpha': 0.3,
-      duration: .5
-    });
-  }
-  
-  private onFinishSpin() {
-    if (!this._UIActionButtons) return;
-    gsap.to(this._UIActionButtons, {
-      'alpha': 1,
-      duration: .25
-    });
   }
   
   private addHeroText() {
@@ -150,13 +136,11 @@ export default class CSlotsGameUI extends CContainer {
     });
     
     heroText.layout = true;
-    
     this._UIHeader?.addChild(heroText);
     
   }
   
-  
-  private setUpSpinButtonAndResult() {
+  private setUpSpinButtonAndResultText() {
     
     // this should finish immediately
     PIXI.Assets.loadBundle('SlotsGameAssets').then((assets) => {
@@ -234,20 +218,81 @@ export default class CSlotsGameUI extends CContainer {
       
       this._UIActionButtons?.addChild(btnTest_1, btnTest_2, this._btnSpin, btnTest_3, btnTest_4);
       
-      
+      // the text default value is non-visible whitespace that won't be trimmed as placeholder
+      // otherwise risking UI flickering.
       const ResultText = new PIXI.Text({
-        text: this._ResultText || '',
+        text: '\u200B\n\u200B\n\u200B\n\u200B\n\u200B\n\u200B\n\u200B',
         style: {
           fill: '#ffffff',
-          fontSize: 32
+          stroke: {
+            color: '#000', // Dark brown border
+            width: 5,
+            join: 'round'
+          },
+          fontSize: 24
         },
         anchor: 0.5
       });
+      // ResultText.alpha = 0;
       ResultText.layout = true;
+      this._ResultText = ResultText;
       
       this._UIFooter?.addChild(ResultText);
     });
     
+  }
+  
+  
+  // fade and unfade the spin button(s)
+  private onStartSpinning() {
+    if (!this._UIActionButtons) return;
+    gsap.to(this._UIActionButtons, {
+      'alpha': 0.3,
+      duration: .5
+    });
+  }
+  
+  private onFinishSpin() {
+    if (!this._UIActionButtons) return;
+    gsap.to(this._UIActionButtons, {
+      'alpha': 1,
+      duration: .25
+    });
+    this.refreshResultTextByLatestResult();
+  }
+  
+  private refreshResultTextByLatestResult() {
+    let spinResult = this._GameMode?.LastestSpinResultProcessed;
+    
+    if (!spinResult || !this._ResultText) return;
+    
+    let finalText = '';
+    
+    
+    let numEmptyLines = 0;
+    Object.keys(spinResult).map((paylineNumber: string) => {
+      
+      let lineResult: TLineResult = spinResult[paylineNumber];
+      
+      if (!lineResult.points) { //empty result
+        numEmptyLines++;
+        return;
+      }
+      
+      // if point exist there must be a symbol as key
+      const symbolName = Object.keys(lineResult)[0];
+      
+      finalText += `\nPayline${paylineNumber} :  ${symbolName}  x  ${lineResult[symbolName]},  Points: ${lineResult.points}`;
+      
+    });
+    
+    // pad the text with empty lines so the styling won't break and UI won't flicker
+    for (let i = 0; i < numEmptyLines; i++) {
+      finalText += '\n\u200B';
+    }
+    
+    this._ResultText.text = finalText.trim(); //removes the br from start of the text
+    this._ResultText.alpha = 1; //if not already shown
   }
   
   private onSpinBtnClick({ toPositions }: { toPositions?: [number, number, number, number, number] } = {}) {
@@ -258,10 +303,7 @@ export default class CSlotsGameUI extends CContainer {
     this._GameMode.StartSpinning({ 'toPositions': toPositions });
   }
   
-  onAddedToStage(GameApp: any) {
-    super.onAddedToStage(GameApp);
-  }
-  
+  // re-calc and set the footer UI's position
   protected onResize() {
     super.onResize();
     
@@ -286,9 +328,4 @@ export default class CSlotsGameUI extends CContainer {
         marginBottom: CSlotsGameUI._UIFOOTER_MARGIN_B_NORMAL
       };
   }
-  
-  protected onTick(ticker: Ticker) {
-    super.onTick(ticker);
-  }
-  
 }

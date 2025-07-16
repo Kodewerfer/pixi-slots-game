@@ -10,8 +10,9 @@ import { TLineResult, TWinLinesResults } from '../types/TWinLinesResults.ts';
 export default class PSlotsGameMode extends PGameMode {
   
   
-  public static EVEN_SPIN_STARTED = 'SPIN_STARTED';
-  public static EVEN_SPIN_FINISHED = 'SPIN_FINISHED';
+  // the main UI will make use of both of these events.
+  public static EVEN_SPIN_STARTED = 'SPIN_STARTED'; //fires as soon as conditions are met, before tweening begins.
+  public static EVEN_SPIN_FINISHED = 'SPIN_FINISHED'; //fires only after calculation is complete.
   
   
   /**
@@ -92,16 +93,18 @@ export default class PSlotsGameMode extends PGameMode {
   // @ts-ignore unused warning, no real use for these two for now.
   private _LatestSpinResultRaw: string[][] = [];
   // @ts-ignore unused warning
-  private _LastestSpinResultProcessed: TWinLinesResults;
+  public LastestSpinResultProcessed: TWinLinesResults;
   
   
   public ReelsWrapper: CReelsWrapper | undefined = undefined;
   
   
+  // also immediately trigger a spin finish to check for the current reels
   onActive(GameApp: any) {
     super.onActive(GameApp);
     console.info('Slots Game Mode Active');
     gsap.registerPlugin(PixiPlugin);
+    this.onFinishedSpinning();
   }
   
   /**
@@ -115,7 +118,6 @@ export default class PSlotsGameMode extends PGameMode {
     }
     
     if (this.GameRunning) return;
-    
     this.GameRunning = true;
     
     this.emit(PSlotsGameMode.EVEN_SPIN_STARTED, this);
@@ -127,16 +129,17 @@ export default class PSlotsGameMode extends PGameMode {
       // the rando algo here is way too simple
       const reel = (this.ReelsWrapper.ReelsArray[reelIndex]) as CReel;
       const randomOffset = Math.floor(Math.random() * 3);
-      const spinTime = 2500 + reelIndex * 600 + randomOffset * 600;
       
       let spinTargetPosition = reel.CurrentPosition + 10 + reelIndex * 5 + randomOffset;
-      // override the rando number if the param is provided
       if (toPositions && toPositions.length === ReelsMaxIndex) {
+        // override the rando number if the param is provided
         spinTargetPosition = toPositions[reelIndex];
       }
       
+      const spinTime = 2500 + reelIndex * 600 + randomOffset * 600;
       
       console.log(`spinTargetPosition for Reel ${reelIndex + 1} = ${spinTargetPosition}`);
+      
       
       // tween the CurrentPosition of a Reel according to the rando value
       gsap.to(reel, {
@@ -145,7 +148,7 @@ export default class PSlotsGameMode extends PGameMode {
         ease: 'back.out',
         onComplete: () => {
           if (reelIndex === ReelsMaxIndex - 1)
-            this.FinishedSpinning();
+            this.onFinishedSpinning();
         }
       });
     }
@@ -209,13 +212,11 @@ export default class PSlotsGameMode extends PGameMode {
     return winResults;
   }
   
-  protected FinishedSpinning() {
+  protected onFinishedSpinning() {
     
     this.GameRunning = false;
     
     console.info('Spinning Finished for the last reel.');
-    
-    this.emit(PSlotsGameMode.EVEN_SPIN_FINISHED, this);
     
     let reelsSymbolNameMatrixArrayOrder = this.ReelsWrapper?.getReelsSymbolNameMatrixArrayOrder();
     
@@ -227,11 +228,9 @@ export default class PSlotsGameMode extends PGameMode {
     console.log(`Spin Result transposed: `, transposeMatrix);
     
     const winLinesData = this.calculateWinLines(transposeMatrix);
-    const spinResult = this.addPointsToWins(winLinesData);
+    this.LastestSpinResultProcessed = this.addPointsToWins(winLinesData);
     
-    this._LastestSpinResultProcessed = spinResult;
-    
-    
+    this.emit(PSlotsGameMode.EVEN_SPIN_FINISHED, this); //UI will use this event
   }
   
   // Transpose a 2D array (matrix).

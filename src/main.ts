@@ -118,7 +118,9 @@ async function OnInitComplete(GameApp: PApp) {
       
       if (bSKIP_LOADING_SCREEN) {
         GameApp.Instance.renderer.background.color = MAIN_SCREEN_BG;
+        
         GameApp.CurrentLevel = SlotsLevel;
+        GameApp.CurrentGameMode = SlotsGameMode; //important, this triggers the "active" state of the game mode
       }
       
     })
