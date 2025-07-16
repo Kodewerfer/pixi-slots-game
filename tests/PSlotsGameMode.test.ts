@@ -1,5 +1,6 @@
 import { expect, test, beforeEach, describe } from 'vitest';
 import PSlotsGameMode from '../src/components/PSlotsGameMode';
+import { TWinLinesResults } from '../src/types/TWinLinesResults';
 
 
 describe('PSlotsGameMode', () => {
@@ -37,10 +38,9 @@ describe('PSlotsGameMode', () => {
     expect(result).toStrictEqual(checkResult);
   });
   
-  
   test('add points to win result - multiple', () => {
     
-    let input = [
+    let input: TWinLinesResults = [
       {},
       {},
       { hv3: 4 },
@@ -63,6 +63,43 @@ describe('PSlotsGameMode', () => {
     
     const result = instance.addPointsToWins(input);
     expect(result).toStrictEqual(resultsWithPoints);
+  });
+  
+  test('get what elements to mark as active from spin result', () => {
+    
+    // the points are only used to check if there is a win, the actual value does not matter here.
+    const input: TWinLinesResults = [
+      { lv1: 3, points: 999 },
+      {},
+      {},
+      { hv3: 4, points: 999 },
+      {},
+      { hv3: 3, points: 999 },
+      {}
+    ];
+    
+    const exp_result = [
+      [ // win line 1
+        [1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0]
+      ],
+      [ // win line 4
+        [1, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0]
+      ],
+      [ // win line 6
+        [1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0]
+      ]
+    ];
+    
+    
+    const result = instance.calculateActiveElements(input);
+    console.log(result);
+    expect(result).toStrictEqual(exp_result);
   });
   
   

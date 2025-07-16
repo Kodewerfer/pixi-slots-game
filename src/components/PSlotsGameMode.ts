@@ -215,11 +215,39 @@ export default class PSlotsGameMode extends PGameMode {
     return winResults;
   }
   
+  /**
+   * Use the win results to calculate which sprite should be highlighted
+   * each result will be a representation of the whole matrix, 0 as passive, 1 as active.
+   * @param winResults
+   * @return number[][][]
+   */
   public calculateActiveElements(winResults: TWinLinesResults) {
     
-    // Object.keys(winResults).map(winResult=>{
-    //   // if(winResult.)
-    // })
+    const winLines = PSlotsGameMode.WIN_CONDITION_PATTERNS;
+    // each result will be a representation of the matrix, 0 as passive, 1 as active.
+    const allActiveMatrix: number[][][] = []; // have to use a 3d array now, this is getting out of hand
+    
+    winResults.map((winResult, winLineIndex) => {
+      
+      const resultMatrix = PSlotsGameMode.createEmptyMatrix(3, 5);
+      
+      if (!winResult.points) return; //no result;
+      let symbolName = Object.keys(winResult)[0];
+      const nOfAKind: number = (winResult[symbolName]) as number;
+      
+      const winLineRef = winLines[winLineIndex];
+      
+      // Mark active positions in the matrix
+      for (let col = 0; col < nOfAKind; col++) {
+        const row = winLineRef[col];
+        resultMatrix[row][col] = 1;
+      }
+      
+      allActiveMatrix.push(resultMatrix);
+      
+    });
+    
+    return allActiveMatrix;
     
   }
   
@@ -251,6 +279,11 @@ export default class PSlotsGameMode extends PGameMode {
     return matrix[0].map((_, colIdx) =>
       matrix.map(row => row[colIdx])
     );
+  }
+  
+  // Create empty 3x5 matrix filled with 0s
+  public static createEmptyMatrix(rowNum: number, colNum: number): number[][] {
+    return Array.from({ length: rowNum }, () => Array(colNum).fill(0));
   }
   
 }
