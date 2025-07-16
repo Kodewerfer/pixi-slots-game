@@ -91,8 +91,7 @@ export default class CContainer extends PIXI.Container {
     
   }
   
-  
-  // @ts-ignore to be implemented in subclasses
   protected onTick(ticker: PIXI.Ticker): void {
+    void ticker; //placeholder
   }
 }

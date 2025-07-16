@@ -167,10 +167,10 @@ export default class PApp extends EventEmitter {
     window.addEventListener('orientationchange', delayedResize);
   }
   
-  public addToStage(target: CContainer): any
-  public addToStage(target: SSprite): any
-  public addToStage(target: PIXI.Sprite): any
-  public addToStage(target: PIXI.Container): any {
+  public addToStage(target: CContainer): void
+  public addToStage(target: SSprite): void
+  public addToStage(target: PIXI.Sprite): void
+  public addToStage(target: PIXI.Container): void {
     
     this.Instance.stage.addChild(target);
     
@@ -180,10 +180,10 @@ export default class PApp extends EventEmitter {
     this.resize();
   };
   
-  public removeFromStage(target: CContainer): any
-  public removeFromStage(target: SSprite): any
-  public removeFromStage(target: PIXI.Sprite): any
-  public removeFromStage(target: PIXI.Container): any {
+  public removeFromStage(target: CContainer): void
+  public removeFromStage(target: SSprite): void
+  public removeFromStage(target: PIXI.Sprite): void
+  public removeFromStage(target: PIXI.Container): void {
     
     this.Instance.stage.removeChild(target);
     

@@ -36,7 +36,7 @@ export default class CReel extends CContainer {
   }
   
   // bind to spin finish
-  onAddedToStage(GameApp: any) {
+  onAddedToStage(GameApp: PApp) {
     super.onAddedToStage(GameApp);
     
     GameApp.addListener(PApp.EVENT_GAMEMODE_SET, (gameMode: PGameMode) => {
@@ -54,7 +54,7 @@ export default class CReel extends CContainer {
     
   }
   
-  onRemovedFromStage(GameApp: any) {
+  onRemovedFromStage(GameApp: PApp) {
     super.onRemovedFromStage(GameApp);
     
     GameApp.CurrentGameMode!.removeListener(PSlotsGameMode.EVENT_SPIN_FINISHED, this.highLightActiveSprites.bind(this));

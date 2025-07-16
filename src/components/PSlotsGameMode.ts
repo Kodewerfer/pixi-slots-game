@@ -5,6 +5,7 @@ import CReel from './CReel.ts';
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 import { TLineResult, TWinLinesResults } from '../types/TWinLinesResults.ts';
+import PApp from '../core/PApp.ts';
 
 // the main logic of a "level"
 export default class PSlotsGameMode extends PGameMode {
@@ -95,7 +96,7 @@ export default class PSlotsGameMode extends PGameMode {
   
   
   public GameRunning: boolean = false;
-  // @ts-ignore unused warning, no real use for these two for now.
+  // @ts-expect-error unused warning, no real use for these two for now.
   private _LatestSpinResultRaw: string[][] = [];
   
   // these two will be consumed by UI
@@ -107,7 +108,7 @@ export default class PSlotsGameMode extends PGameMode {
   
   
   // also immediately trigger a spin finish to check for the current reels
-  onActive(GameApp: any) {
+  onActive(GameApp: PApp) {
     super.onActive(GameApp);
     console.info('Slots Game Mode Active');
     gsap.registerPlugin(PixiPlugin);
@@ -130,7 +131,7 @@ export default class PSlotsGameMode extends PGameMode {
     this.emit(PSlotsGameMode.EVENT_SPIN_STARTED, this);
     console.info('Spinning Begins');
     
-    let ReelsMaxIndex = this.ReelsWrapper.ReelsArray.length;
+    const ReelsMaxIndex = this.ReelsWrapper.ReelsArray.length;
     
     for (let reelIndex = 0; reelIndex < ReelsMaxIndex; reelIndex++) {
       const reel = this.ReelsWrapper.ReelsArray[reelIndex] as CReel;
@@ -251,7 +252,7 @@ export default class PSlotsGameMode extends PGameMode {
       const resultMatrix = PSlotsGameMode.createEmptyMatrix(3, 5);
       
       if (!winResult.points) return; //no result;
-      let symbolName = Object.keys(winResult)[0];
+      const symbolName = Object.keys(winResult)[0];
       const nOfAKind: number = (winResult[symbolName]) as number;
       
       const winLineRef = winLines[winLineIndex];
@@ -277,7 +278,7 @@ export default class PSlotsGameMode extends PGameMode {
     
     console.info('Spinning Finished for the last reel.');
     
-    let reelsSymbolNameMatrixArrayOrder = this.ReelsWrapper?.getReelsSymbolNameMatrixArrayOrder();
+    const reelsSymbolNameMatrixArrayOrder = this.ReelsWrapper?.getReelsSymbolNameMatrixArrayOrder();
     
     console.log(`Spin Result:`, reelsSymbolNameMatrixArrayOrder);
     

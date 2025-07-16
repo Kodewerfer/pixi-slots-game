@@ -12,7 +12,7 @@ describe('PSlotsGameMode', () => {
   
   test('no win lines', () => {
     
-    let winlineTestInput = [
+    const winlineTestInput = [
       ['lv4', 'lv1', 'lv1', 'lv4', 'hv4'],
       ['hv4', 'lv2', 'hv2', 'hv3', 'hv2'],
       ['lv1', 'lv4', 'lv3', 'lv2', 'lv2']
@@ -26,7 +26,7 @@ describe('PSlotsGameMode', () => {
   });
   
   test('win in line 1 and 6', () => {
-    let inputMatrix = [
+    const inputMatrix = [
       ['lv1', 'lv1', 'lv1', 'lv4', 'lv1'],
       ['hv4', 'lv1', 'hv2', 'lv1', 'hv2'],
       ['lv2', 'lv4', 'lv1', 'lv2', 'lv2']
@@ -40,7 +40,7 @@ describe('PSlotsGameMode', () => {
   
   test('add points to win result - multiple', () => {
     
-    let input: TWinLinesResults = [
+    const input: TWinLinesResults = [
       {},
       {},
       { hv3: 4 },
@@ -79,24 +79,21 @@ describe('PSlotsGameMode', () => {
     ];
     
     // reference
-    // @ts-ignore
-    const exp_result_REF = [
-      [ // win line 1
-        [1, 1, 1, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
-      ],
-      [ // win line 4
-        [1, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0],
-        [0, 0, 0, 1, 0]
-      ],
-      [ // win line 6
-        [1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0]
-      ]
-    ];
+    //   [ // win line 1
+    //     [1, 1, 1, 0, 0],
+    //     [0, 0, 0, 0, 0],
+    //     [0, 0, 0, 0, 0]
+    //   ],
+    //   [ // win line 4
+    //     [1, 1, 0, 0, 0],
+    //     [0, 0, 1, 0, 0],
+    //     [0, 0, 0, 1, 0]
+    //   ],
+    //   [ // win line 6
+    //     [1, 0, 0, 0, 0],
+    //     [0, 1, 0, 0, 0],
+    //     [0, 0, 1, 0, 0]
+    //   ]
     
     const exp_result = [
       [

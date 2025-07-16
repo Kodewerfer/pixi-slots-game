@@ -261,7 +261,7 @@ export default class CSlotsGameUI extends CContainer {
   }
   
   private refreshResultTextByLatestResult() {
-    let spinResult = this._GameMode?.LastestSpinResultProcessed;
+    const spinResult = this._GameMode?.LastestSpinResultProcessed;
     
     if (!spinResult || !this._ResultText) return;
     

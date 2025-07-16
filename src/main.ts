@@ -9,6 +9,7 @@ import CSlotsGameUI from './components/CSlotsGameUI.ts';
 import CLoadingScreenUI from './components/CLoadingScreenUI.ts';
 
 import { gsap } from 'gsap';
+import TAssetsDictionary from './types/TAssetsDictionary.ts';
 
 
 // ---config
@@ -53,7 +54,7 @@ async function OnInitComplete(GameApp: PApp) {
   
   // the loading screen
   const LoadingLevel = new PSlotsGameLevel({ levelID: 'Loading Level' }); //in a more complex case where the PSlotsGameLevel has its own logic, the loading level should have its own class.
-  let loadingScreen = new CLoadingScreenUI();
+  const loadingScreen = new CLoadingScreenUI();
   LoadingLevel.Container.addChild(loadingScreen);
   loadingScreen.addEventListener(CLoadingScreenUI.EVENT_START_CLICKED, () => {
     
@@ -77,7 +78,7 @@ async function OnInitComplete(GameApp: PApp) {
   
   let bIsMainGameReady = false;// flag
   const lastProgress: number[] = [];
-  let progressTimeOut: any;
+  let progressTimeOut: number;
   PIXI.Assets.loadBundle('SlotsGameAssets', (progress) => {
     
     // a bit of a cheap trick to make sure the loading process is visible
@@ -137,7 +138,7 @@ function OnInitFailed() {
 }
 
 // -- build each reel following its reel strip set.
-function initializeSlotReels(assetsDictionary: {}) {
+function initializeSlotReels(assetsDictionary: TAssetsDictionary) {
   // the "wrapper", that holds all 5 reels
   const reelsWrapper = new CReelsWrapper();
   

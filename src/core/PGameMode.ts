@@ -40,9 +40,8 @@ export default class PGameMode extends EventEmitter {
     GameApp.Instance.ticker.remove(this.onTick.bind(this));
     this.emit(PGameMode.EVENT_Dormant, this);
   }
-  
-  // @ts-ignore to be implemented in subclasses
   protected onTick(ticker: PIXI.Ticker) {
+    void ticker; //placeholder
   }
   
 }

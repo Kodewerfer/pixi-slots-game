@@ -117,7 +117,7 @@ export default class SSprite extends PIXI.Sprite {
     
   }
   
-  // @ts-ignore to be implemented in subclasses
   protected onTick(ticker: PIXI.Ticker): void {
+    void ticker; //placeholder
   }
 }

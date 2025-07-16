@@ -43,7 +43,7 @@ export default class CReelsWrapper extends CContainer {
   // This works right now because the sprites are not really moving.
   // if the animation is position base, meaning the sprites actually move, then this order will be incorrect.
   public getReelsSymbolNameMatrixArrayOrder() {
-    let nameMatrix: string[][] = [];
+    const nameMatrix: string[][] = [];
     
     this.ReelsArray?.map((reel) => {
       
