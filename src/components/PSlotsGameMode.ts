@@ -4,8 +4,9 @@ import CReel from './CReel.ts';
 
 import { gsap } from 'gsap';
 import { PixiPlugin } from 'gsap/PixiPlugin';
-import { TLineResult, TWinLinesResults, TWinLinesResultsWithPoints } from '../types/TWinLinesResults.ts';
+import { TLineResult, TWinLinesResults } from '../types/TWinLinesResults.ts';
 
+// the main logic of a "level"
 export default class PSlotsGameMode extends PGameMode {
   
   
@@ -44,7 +45,7 @@ export default class PSlotsGameMode extends PGameMode {
    *       7      |      - x - x -
    *              |      x - - - x
    */
-  // Define win line patterns, the number in the array is where the "line" is in each column(taking in a 5 col 3 rows matrix of symbols)
+    // Define win line patterns, the number in the array is where the "line" is in each col (taking in a 5 col by 3 rows matrix of symbols)
   public static WIN_CONDITION_PATTERNS: { [id: string]: number[] } = {
     1: [0, 0, 0, 0, 0],
     2: [1, 1, 1, 1, 1],
@@ -88,6 +89,10 @@ export default class PSlotsGameMode extends PGameMode {
   
   
   public GameRunning: boolean = false;
+  // @ts-ignore unused warning, no real use for these two for now.
+  private _LatestSpinResultRaw: string[][] = [];
+  // @ts-ignore unused warning
+  private _LastestSpinResultProcessed: TWinLinesResults;
   
   
   public ReelsWrapper: CReelsWrapper | undefined = undefined;
@@ -99,7 +104,10 @@ export default class PSlotsGameMode extends PGameMode {
     gsap.registerPlugin(PixiPlugin);
   }
   
-  public StartSpinning() {
+  /**
+   * @param toPositions optional,debugging use. spin each reel to a designated position. has to be length of 5
+   */
+  public StartSpinning({ toPositions }: { toPositions?: [number, number, number, number, number] } = {}) {
     
     if (!this.ReelsWrapper || !this.ReelsWrapper.ReelsArray) {
       console.error('Slots Game Mode: Reels Not Set');
@@ -116,11 +124,17 @@ export default class PSlotsGameMode extends PGameMode {
     let ReelsMaxIndex = this.ReelsWrapper.ReelsArray.length;
     
     for (let reelIndex = 0; reelIndex < ReelsMaxIndex; reelIndex++) {
-      
+      // the rando algo here is way too simple
       const reel = (this.ReelsWrapper.ReelsArray[reelIndex]) as CReel;
       const randomOffset = Math.floor(Math.random() * 3);
-      const spinTargetPosition = reel.CurrentPosition + 10 + reelIndex * 5 + randomOffset;
       const spinTime = 2500 + reelIndex * 600 + randomOffset * 600;
+      
+      let spinTargetPosition = reel.CurrentPosition + 10 + reelIndex * 5 + randomOffset;
+      // override the rando number if the param is provided
+      if (toPositions && toPositions.length === ReelsMaxIndex) {
+        spinTargetPosition = toPositions[reelIndex];
+      }
+      
       
       console.log(`spinTargetPosition for Reel ${reelIndex + 1} = ${spinTargetPosition}`);
       
@@ -188,6 +202,7 @@ export default class PSlotsGameMode extends PGameMode {
         if (pointsTable[symbolName] && pointsTable[symbolName][nOfAKind]) {
           winResult.points = pointsTable[symbolName][nOfAKind];
         }
+        
       }
     }
     
@@ -205,7 +220,18 @@ export default class PSlotsGameMode extends PGameMode {
     let reelsSymbolNameMatrixArrayOrder = this.ReelsWrapper?.getReelsSymbolNameMatrixArrayOrder();
     
     console.log(`Spin Result:`, reelsSymbolNameMatrixArrayOrder);
-    console.log(`Spin Result transposed: `, PSlotsGameMode.transposeMatrix(reelsSymbolNameMatrixArrayOrder!));
+    
+    const transposeMatrix = PSlotsGameMode.transposeMatrix(reelsSymbolNameMatrixArrayOrder!);
+    this._LatestSpinResultRaw = transposeMatrix;
+    
+    console.log(`Spin Result transposed: `, transposeMatrix);
+    
+    const winLinesData = this.calculateWinLines(transposeMatrix);
+    const spinResult = this.addPointsToWins(winLinesData);
+    
+    this._LastestSpinResultProcessed = spinResult;
+    
+    
   }
   
   // Transpose a 2D array (matrix).

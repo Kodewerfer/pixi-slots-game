@@ -186,33 +186,51 @@ export default class CSlotsGameUI extends CContainer {
         fontSize: 24
       };
       
+      // -- test buttons
       const btnTest_1 = new PIXI.Text({
-        text: 'TEST 1',
-        style: testButtonStyles,
+        text: 'RESET',
+        style: {
+          ...testButtonStyles,
+          fill: '#EF6461'
+        },
         anchor: 0.5
       });
+      btnTest_1.cursor = 'pointer';
+      btnTest_1.eventMode = 'static';
       btnTest_1.layout = true;
+      btnTest_1.on('pointerdown', () => this.onSpinBtnClick({ toPositions: [0, 0, 0, 0, 0] }));
       
       const btnTest_2 = new PIXI.Text({
         text: 'TEST 2',
         style: testButtonStyles,
         anchor: 0.5
       });
+      btnTest_2.cursor = 'pointer';
+      btnTest_2.eventMode = 'static';
       btnTest_2.layout = true;
+      btnTest_2.on('pointerdown', () => this.onSpinBtnClick({ toPositions: [5, 14, 9, 9, 16] }));
       
       const btnTest_3 = new PIXI.Text({
         text: 'TEST 3',
         style: testButtonStyles,
         anchor: 0.5
       });
+      btnTest_3.cursor = 'pointer';
+      btnTest_3.eventMode = 'static';
       btnTest_3.layout = true;
+      btnTest_3.on('pointerdown', () => this.onSpinBtnClick({ toPositions: [1, 16, 2, 15, 0] }));
       
       const btnTest_4 = new PIXI.Text({
         text: 'TEST 4',
         style: testButtonStyles,
         anchor: 0.5
       });
+      btnTest_4.cursor = 'pointer';
+      btnTest_4.eventMode = 'static';
       btnTest_4.layout = true;
+      btnTest_4.on('pointerdown', () => this.onSpinBtnClick({ toPositions: [18, 9, 2, 0, 12] }));
+      // -- test buttons
+      
       
       this._UIActionButtons?.addChild(btnTest_1, btnTest_2, this._btnSpin, btnTest_3, btnTest_4);
       
@@ -232,12 +250,12 @@ export default class CSlotsGameUI extends CContainer {
     
   }
   
-  private onSpinBtnClick() {
+  private onSpinBtnClick({ toPositions }: { toPositions?: [number, number, number, number, number] } = {}) {
     if (!this._GameMode) {
       console.error('UI:GameMode not set.');
       return;
     }
-    this._GameMode.StartSpinning();
+    this._GameMode.StartSpinning({ 'toPositions': toPositions });
   }
   
   onAddedToStage(GameApp: any) {
