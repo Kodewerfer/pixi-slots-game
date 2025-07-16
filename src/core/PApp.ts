@@ -1,5 +1,5 @@
 /**
- * Pixi Application
+ * (P)ixi (App)lication
  * This serves as the top-most layer
  * All business logic should be handled by other classes that piggy-back on the onTick
  */
@@ -27,9 +27,9 @@ export default class PApp extends EventEmitter {
   
   private _Screen: PIXI.Rectangle = new PIXI.Rectangle();// for ease of use
   
-  private _CurrentGameMode: PGameMode | undefined | null;
   
   private _CurrentLevel: PLevel | undefined | null; // only a single "level" presents at a time.
+  private _CurrentGameMode: PGameMode | undefined | null; //the "game mode" for the current level
   
   
   constructor({ baseScreenWidth, baseScreenHeight, renderTargetID }: {

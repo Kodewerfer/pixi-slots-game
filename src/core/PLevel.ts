@@ -1,4 +1,5 @@
 /**
+ * a (P)ixi App (Level)
  * Abstract layer that serves as a general container
  * Functionally it is the same to a "page"
  * This is a middle-man layer that should not handle actual logic

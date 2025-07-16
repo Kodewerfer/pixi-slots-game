@@ -1,4 +1,5 @@
 /**
+ * a (P)ixi app (Game Mode)
  * Abstract layer that handles primarily the logic within a "level"
  */
 

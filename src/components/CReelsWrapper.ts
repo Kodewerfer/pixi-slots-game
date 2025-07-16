@@ -38,7 +38,10 @@ export default class CReelsWrapper extends CContainer {
     this.reScaleWithBaseRes();
   }
   
-  
+  // NOTE: IMPORTANT:
+  // This gets the symbol in their "array order", whether it be container.children or the CReel's prop
+  // This works right now because the sprites are not really moving.
+  // if the animation is position base, meaning the sprites actually move, then this order will be incorrect.
   public getReelsSymbolNameMatrixArrayOrder() {
     let nameMatrix: string[][] = [];
     
