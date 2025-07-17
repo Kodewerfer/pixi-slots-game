@@ -234,8 +234,13 @@ export default class CReel extends CContainer {
       
       // Swap texture if not already showing
       if (ssprite.CurrentSymbolName !== symbolName) {
+        
+        const newTexture = this._AssetsDictionary[symbolName];
+        newTexture.update(); //manual syncs, trying to avoid the "width or height out of range" issue
+        newTexture.updateUvs();
+        
         ssprite.swapTexture({
-          newTexture: this._AssetsDictionary[symbolName],
+          newTexture: newTexture,
           newName: symbolName
         });
       }
