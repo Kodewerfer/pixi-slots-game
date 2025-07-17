@@ -11,27 +11,16 @@
 Demo Features:
 
 * Loading screen
-* Reel strip
-* Simple spinning animation and winning highlighting.
+* Reel strip and position-based spinning
+* Simple spinning animation and winning highlighting
 * Win lines and points calculation
-* Responsive UI ~~(until breaks)~~
-
-Known Issues:
-
-* `WebGL: INVALID_VALUE: texImage2D: width or height out of range`
-    * Because the animation is texture swapping base, if the speed of the animation is too fast, the renderer will have
-      a hard time catching up to it, resulting rendering textures with `0x0` pixels.
-* Math.random()
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+* Responsive UI ~~(until it breaks)~~
 
 ### Built With
 
 * [![TypeScript][typescript-badge]][typescript-url]
 * [![Vite][vite-badge]][vite-url]
 * [![Pixi.js][pixi-badge]][pixi-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
@@ -79,21 +68,26 @@ The bulk of the business logic is in the subclass `PSlotsGameMode`, including `S
 then `addPointsToWins()` and finally `calculateActiveElements()`. The communication between each component is, by and
 large, done via event emitters and listeners.
 
-`StartSpinning()` generates a random spin target as the new _**position**_ value for each of the five reels, then set
-the new position to each of the reels by using `gsap.to()`(tweening).
+_Each reel is associated with a reel strip, which is a string array of symbols; and a **_position_** value that
+determines the starting point for displaying symbols on the screen. The visible symbols for a reel are drawn
+consecutively from its
+current **_position_**. if the **_position_** reaches the end of the array, it loops back to the beginning to ensure
+continuity (mod operator)._
+
+The `StartSpinning()` function from `PSlotsGameMode` first calculates a random stopping position (spin target) for each
+of the five reels. These target positions are then smoothly animated using gsap.to(), which tweens the reels from their
+current positions to their new destinations.
 
 The `onTick()` method of each `CReel` constantly "animates" the reel. When _**position**_ changes, it applies a blur
 effect while swapping the texture of the sprites according to the reel strip's data. Because the _**position**_ is being
 tweened, the reel will appear to be moving.
 
-After a spin finishes, and after `calculateActiveElements()` completes, each `CReel` will be able to access a matrix
-that is composed of 1 and 0 that represent the "active state" of each sprite. `CReel` will then set the colour overlay
-accordingly.
+After a spin completes and `calculateActiveElements()` finishes, each `CReel` accesses a binary state matrix (1 and 0)
+where each value indicates whether a symbol is part of a winning line. The reel then uses this matrix to apply color
+overlays exclusively to active symbols in its own column.
 
-`CSlotsGameUI` listens for the `EVENT_SPIN_STARTED` and `EVENT_SPIN_FINISHED` emitted by `PSlotsGameMode`, who then
-Access the data stored in the gamemode class to display it to the user.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+`CSlotsGameUI` listens for the `EVENT_SPIN_STARTED` and `EVENT_SPIN_FINISHED` emitted by `PSlotsGameMode`, then UI
+gets the data stored in the gamemode class to display it to the user.
 
 
 [typescript-badge]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
